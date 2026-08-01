@@ -13,7 +13,7 @@ from google import genai
 from knowledge_base import BRAND
 
 _client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-_MODEL_NAME = "gemini-2.0-flash"
+_MODEL_NAME = "gemini-3.6-flash"
 
 THRESHOLD = int(os.environ.get("QUALITY_THRESHOLD", 80))
 

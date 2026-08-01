@@ -61,13 +61,17 @@ def post_single_image(image_url: str, caption: str):
 def post_carousel(image_urls: list, caption: str):
     child_ids = []
     for url in image_urls:
-        child = requests.post(
+        res = requests.post(
             f"{GRAPH_API}/{IG_USER_ID}/media",
             data={"image_url": url, "is_carousel_item": "true", "access_token": ACCESS_TOKEN},
-        ).json()
+        )
+        child = res.json()
+        if "id" not in child:
+            print(f"[publish_meta] Meta API Item Error: {child}")
+            raise KeyError(f"Meta error uploading carousel item: {child}")
         child_ids.append(child["id"])
 
-    container = requests.post(
+    res = requests.post(
         f"{GRAPH_API}/{IG_USER_ID}/media",
         data={
             "media_type": "CAROUSEL",
@@ -75,7 +79,11 @@ def post_carousel(image_urls: list, caption: str):
             "children": ",".join(child_ids),
             "access_token": ACCESS_TOKEN,
         },
-    ).json()
+    )
+    container = res.json()
+    if "id" not in container:
+        print(f"[publish_meta] Meta API Carousel Error: {container}")
+        raise KeyError(f"Meta error creating carousel container: {container}")
     return _publish(container["id"])
 
 

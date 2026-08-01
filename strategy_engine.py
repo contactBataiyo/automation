@@ -23,7 +23,7 @@ from google import genai
 from knowledge_base import BRAND, PILLARS, PRINCIPLES
 
 _client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-_MODEL_NAME = "gemini-1.5-flash"
+_MODEL_NAME = "gemini-2.5-flash"
 
 OBJECTIVES = {
     "increase_downloads": "Drive direct app installs — content should make the value obvious enough to act on now.",
@@ -93,7 +93,7 @@ Respond ONLY with valid JSON, no markdown fences:
   "cta_goal": "one of: increase_downloads, educate, build_trust, increase_referrals, help_providers, engagement"
 }}
 """
-    response = _client.models.generate_content(model="gemini-1.5-flash", contents=prompt)
+    response = _client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
     text = response.text.strip().strip("```json").strip("```").strip()
     try:
         strategy = json.loads(text)

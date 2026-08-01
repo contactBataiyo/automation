@@ -29,7 +29,13 @@ WHITE = (255, 255, 255)
 
 
 def _font(path, size):
-    return ImageFont.truetype(path, size)
+    try:
+        return ImageFont.truetype(path, size)
+    except (OSError, IOError):
+        try:
+            return ImageFont.truetype("DejaVuSans.ttf", size)
+        except (OSError, IOError):
+            return ImageFont.load_default()
 
 
 def _wrap_and_draw(draw, text, font, max_width, xy, fill, line_spacing=1.15, anchor_top=True):

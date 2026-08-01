@@ -42,7 +42,19 @@ Respond ONLY with valid JSON, no markdown fences:
 
 def run_story_prompt(system_context: str, task: str) -> dict:
     prompt = f"{system_context}\n\n{task}\n\n{OUTPUT_SCHEMA}"
-    response = _client.models.generate_content(model=_MODEL_NAME, contents=prompt)
+    
+    # Retry loop for rate limits
+    for attempt in range(3):
+        try:
+            response = _client.models.generate_content(model=_MODEL_NAME, contents=prompt)
+            break
+        except Exception as e:
+            if "RESOURCE_EXHAUSTED" in str(e) or "429" in str(e):
+                print(f"[story_engine] Rate limit hit. Waiting 20s before retry {attempt + 1}/3...")
+                time.sleep(20)
+            else:
+                raise e
+
     text = response.text.strip().strip("```json").strip("```").strip()
     try:
         data = json.loads(text)

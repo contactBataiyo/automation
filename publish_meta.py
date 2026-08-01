@@ -47,10 +47,14 @@ def _wait_until_ready(container_id, max_wait=120):
 
 
 def post_single_image(image_url: str, caption: str):
-    container = requests.post(
+    res = requests.post(
         f"{GRAPH_API}/{IG_USER_ID}/media",
         data={"image_url": image_url, "caption": caption, "access_token": ACCESS_TOKEN},
-    ).json()
+    )
+    container = res.json()
+    if "id" not in container:
+        print(f"[publish_meta] Meta API Error: {container}")
+        raise KeyError(f"Meta returned an error instead of container ID: {container}")
     return _publish(container["id"])
 
 

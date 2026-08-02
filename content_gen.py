@@ -121,7 +121,7 @@ Respond ONLY with valid JSON, no markdown fences:
   "reel_voiceover_script": "only if format is reel, else empty string"
 }}
 """
-for attempt in range(3):
+    for attempt in range(3):
     try:
         response = _client.models.generate_content(model=MODEL_NAME, contents=prompt)
         break
@@ -131,7 +131,7 @@ for attempt in range(3):
             time.sleep(15)
         else:
             raise e    
-            text = response.text.strip().strip("```json").strip("```").strip()
+    text = response.text.strip().strip("```json").strip("```").strip()
     try:
         return json.loads(text)
     except json.JSONDecodeError:

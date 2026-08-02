@@ -19,6 +19,7 @@ a source of truth.
 
 import os
 import json
+import time
 from google import genai
 
 import knowledge_base as kb
@@ -30,7 +31,7 @@ import job_story
 import marriage_story
 
 _client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-_MODEL_NAME = "gemini-3.6-flash"
+MODEL_NAME = "gemini-3.6-flash"
 
 STORY_ENGINES = {
     "recommendation_story": recommendation_story,
@@ -120,8 +121,17 @@ Respond ONLY with valid JSON, no markdown fences:
   "reel_voiceover_script": "only if format is reel, else empty string"
 }}
 """
-    response = _client.models.generate_content(model=_MODEL_NAME, contents=prompt)
-    text = response.text.strip().strip("```json").strip("```").strip()
+for attempt in range(3):
+    try:
+        response = _client.models.generate_content(model=MODEL_NAME, contents=prompt)
+        break
+    except Exception as e:
+        if any(err in str(e) for err in ["503", "429", "RESOURCE_EXHAUSTED", "UNAVAILABLE"]):
+            print(f"[content_gen] API busy/rate-limited. Waiting 15s (attempt {attempt + 1}/3)...")
+            time.sleep(15)
+        else:
+            raise e    
+            text = response.text.strip().strip("```json").strip("```").strip()
     try:
         return json.loads(text)
     except json.JSONDecodeError:

@@ -31,7 +31,7 @@ import job_story
 import marriage_story
 
 _client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-MODEL_NAME = "gemini-3.6-flash"
+_MODEL_NAME = "gemini-3.6-flash"
 
 STORY_ENGINES = {
     "recommendation_story": recommendation_story,
